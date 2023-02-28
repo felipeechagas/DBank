@@ -14,8 +14,8 @@ import java.util.TimeZone;
  *
  * Uma transação é definada na ‘interface’ de {@link Operacoes}. <p><br />
  *
- * @author Alex Rogério
- * @since 17/08/2021
+ * @author FelipeChagas
+ * @since 28/02/2023
  * @version 1.0
  */
 

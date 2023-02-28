@@ -6,8 +6,8 @@ import java.util.List;
 
 /** Esta entendidade valida os dados da {@link Conta}.
  *
- * @author Alex Rogério
- * @since 17/08/2021
+ * @author FelipeChagas
+ * @since 28/02/2023
  * @version 1.0
  */
 public class ValidacaoHelper {
