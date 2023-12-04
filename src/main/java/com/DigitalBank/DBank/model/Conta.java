@@ -1,95 +1,62 @@
 package com.DigitalBank.DBank.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Random;
 
-/** Esta model representa uma Conta.
- *
- * Uma conta deve ser ligada apenas uma {@link Pessoa}. <p><br />
+/**
+ * Esta model representa uma Conta.
+ * <p>
+ * Uma conta deve ser ligada apenas uma {@link Cliente}. <p><br />
  * Quem regulamenta a conta é a {@link Instituicao}. <p><br />
  *
  * @author FelipeChagas
- * @since 28/01/2023
  * @version 1.0
+ * @since 28/01/2023
  */
 
-public class Conta {
+@Entity
+@Data
+@AllArgsConstructor
+@Table(name = "tb_conta")
+public class Conta extends Instituicao {
+
+  private static final long serialVersionUID = 1L;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   private String numero;
-
   private boolean ativa;
-
   private Double saldo;
+  private String tipoConta;
 
-  private Pessoa pessoa;
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "cliente_id")
+  private Cliente cliente;
 
   private Date dataCriacao;
 
+  @OneToOne
+  @JoinColumn(name = "cartaoCredito_numeroCartao")
   private CartaoCredito cartaoCredito;
-
-  private boolean possuiCredito;
 
   public Conta() {
     Random random = new Random();
     this.numero = "" + random.nextInt(4) + "-" + random.nextInt(1);
-    this.pessoa = new Pessoa();
+    this.cliente = new Cliente();
     this.saldo = 0.0;
     this.ativa = Boolean.TRUE;
-  }
-
-  public String getNumero() {
-    return numero;
-  }
-
-  public void setNumero(String numero) {
-    this.numero = numero;
-  }
-
-  public boolean isAtiva() {
-    return ativa;
   }
 
   public void setAtiva(boolean ativa) {
     this.ativa = ativa;
   }
 
-  public Double getSaldo() {
-    return saldo;
-  }
-
-  public void setSaldo(Double saldo) {
-    this.saldo = saldo;
-  }
-
-  public Pessoa getPessoa() {
-    return pessoa;
-  }
-
-  public void setPessoa(Pessoa pessoa) {
-    this.pessoa = pessoa;
-  }
-
-  public Date getDataCriacao() {
-    return dataCriacao;
-  }
-
-  public void setDataCriacao(Date dataCriacao) {
-    this.dataCriacao = dataCriacao;
-  }
-
-  public CartaoCredito getCartaoCredito() {
-    return cartaoCredito;
-  }
-
-  public void setCartaoCredito(CartaoCredito cartaoCredito) {
-    this.cartaoCredito = cartaoCredito;
-  }
-
-  public boolean isPossuiCredito() {
-    return possuiCredito;
-  }
-
-  public void setPossuiCredito(boolean possuiCredito) {
-    this.possuiCredito = possuiCredito;
-  }
 }

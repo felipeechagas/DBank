@@ -39,4 +39,9 @@ public class Cliente {
   @OneToOne(mappedBy = "cliente")
   private Conta conta;
 
+  @JsonIgnore
+  @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+  private CartaoCredito cartaoCredito;
+
+
 }
