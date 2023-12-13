@@ -41,6 +41,7 @@ public class Conta extends Instituicao {
   @JoinColumn(name = "cliente_id")
   private Cliente cliente;
 
+  @Temporal(TemporalType.TIMESTAMP)
   private Date dataCriacao;
 
   @OneToOne
@@ -49,7 +50,7 @@ public class Conta extends Instituicao {
 
   public Conta() {
     Random random = new Random();
-    this.numero = "" + random.nextInt(4) + "-" + random.nextInt(1);
+    this.numero = String.format("%04d-%03d", random.nextInt(10000), random.nextInt(1000));
     this.cliente = new Cliente();
     this.saldo = 0.0;
     this.ativa = Boolean.TRUE;
