@@ -27,13 +27,14 @@ public class CartaoCreditoController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CartaoCredito> criarCartaoCredito(@RequestBody CartaoCredito cartaoCredito) {
+    public ResponseEntity<?> criarCartaoCredito(@RequestBody CartaoCredito cartaoCredito) {
         try {
-            cartaoCredito.setStatus(CartaoCredito.Status.ATIVO);
-            CartaoCredito novoCartaoCredito = cartaoCreditoService.criarNovoCartaoCredito(cartaoCredito);
-            return new ResponseEntity<>(novoCartaoCredito, HttpStatus.CREATED);
+            CartaoCredito novoCartao = cartaoCreditoService.criarCartaoCreditoParaClienteExistente(cartaoCredito);
+            return new ResponseEntity<>(novoCartao, HttpStatus.CREATED);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Erro ao criar o cartão de crédito.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -24,47 +24,53 @@ public class CartaoCreditoService {
         return cartaoCreditoRepository.findAll();
     }
 
-    public CartaoCredito criarNovoCartaoCredito(CartaoCredito cartaoCredito) {
-
+    public CartaoCredito criarCartaoCreditoParaClienteExistente(CartaoCredito cartaoCredito) {
         Cliente clienteAssociado = cartaoCredito.getCliente();
 
-        if (clienteAssociado.getId() == null) {
-            Cliente novoCliente = clienteRepository.save(clienteAssociado);
-            cartaoCredito.setCliente(novoCliente);
-        } else if (clienteRepository.findById(clienteAssociado.getId()).isPresent()) {
-            throw new BadRequestException("Cliente não encontrado. Não é possível criar o cartão de crédito.");
+        // Verifica se o cliente associado possui CPF
+        if (clienteAssociado.getCpf() != null) {
+            // Verifica se o cliente existe no banco de dados pelo CPF
+            Optional<Cliente> optionalCliente = clienteRepository.findByCpf(clienteAssociado.getCpf());
+            if (optionalCliente.isPresent()) {
+                Cliente clienteExistente = optionalCliente.get();
+                // Verifica se o cliente já possui um cartão de crédito
+                if (clienteExistente.getCartaoCredito() == null) {
+                    // Atribui o cliente existente ao cartão de crédito
+                    cartaoCredito.setCliente(clienteExistente);
+
+                    // Gera um número de cartão automaticamente
+                    Random random = new Random();
+                    String numeroCartao = String.format("%04d-%04d-%04d-%04d",
+                            random.nextInt(10000), random.nextInt(10000),
+                            random.nextInt(10000), random.nextInt(10000));
+                    cartaoCredito.setNumeroCartao(numeroCartao);
+
+                    // Gera um código de segurança (CVV) de três dígitos aleatório
+                    String codigoSeguranca = String.format("%03d", random.nextInt(1000));
+                    cartaoCredito.setCodigoSeguranca(Integer.valueOf(codigoSeguranca));
+
+                    // Define a data de validade do cartão (3 anos a partir da data atual)
+                    Calendar calendarValidade = Calendar.getInstance();
+                    calendarValidade.add(Calendar.YEAR, 3);
+                    Date validadeCartao = calendarValidade.getTime();
+                    cartaoCredito.setValidade(new SimpleDateFormat("MM/yyyy").format(validadeCartao));
+
+                    // Define o status do cartão como ativo
+                    cartaoCredito.setStatus(CartaoCredito.Status.ATIVO);
+
+                    // Salva o cartão de crédito no banco de dados
+                    return cartaoCreditoRepository.save(cartaoCredito);
+                } else {
+                    throw new BadRequestException("Cliente já possui um cartão de crédito.");
+                }
+            } else {
+                throw new BadRequestException("Cliente não encontrado. Não é possível criar o cartão de crédito.");
+            }
+        } else {
+            throw new BadRequestException("CPF do cliente não fornecido. Não é possível criar o cartão de crédito.");
         }
-
-        // Gera um número de cartão automaticamente
-        Random random = new Random();
-        String numeroCartao = String.format("%04d-%04d-%04d-%04d",
-                random.nextInt(10000), random.nextInt(10000),
-                random.nextInt(10000), random.nextInt(10000));
-        cartaoCredito.setNumeroCartao(numeroCartao);
-
-        // Gera um código de segurança (CVV) de três dígitos aleatório
-        String codigoSeguranca = String.format("%03d", random.nextInt(1000));
-        cartaoCredito.setCodigoSeguranca(Integer.valueOf(codigoSeguranca));
-
-        // Define a data de criação como a data atual
-        Calendar calendarValidade = Calendar.getInstance();
-        calendarValidade.setTime(new Date());
-        calendarValidade.add(Calendar.YEAR, 3);
-        Date validadeCartao = calendarValidade.getTime();
-        cartaoCredito.setValidade(new SimpleDateFormat("MM/yyyy").format(validadeCartao));
-
-        String vencimentoFatura = cartaoCredito.getVencimentoFatura();
-
-        // Calcula a data de validade da fatura com base nos dias fornecidos
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(vencimentoFatura));
-        cartaoCredito.setVencimentoFatura(new SimpleDateFormat("dd").format(calendar.getTime()));
-
-        cartaoCredito.setStatus(CartaoCredito.Status.ATIVO);
-
-        return cartaoCreditoRepository.save(cartaoCredito);
-
     }
+
 
     public void alterarVencimentoFatura(String numeroCartao, String vencimentoFatura) {
         Optional<CartaoCredito> optionalCartaoCredito = cartaoCreditoRepository.findByNumeroCartao(numeroCartao);
