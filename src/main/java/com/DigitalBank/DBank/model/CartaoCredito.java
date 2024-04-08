@@ -1,5 +1,6 @@
 package com.DigitalBank.DBank.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -47,6 +48,7 @@ public class CartaoCredito {
 
   @OneToOne
   @JoinColumn(name = "cliente_id")
+  @JsonBackReference
   private Cliente cliente;
 
   private double limiteCredito;

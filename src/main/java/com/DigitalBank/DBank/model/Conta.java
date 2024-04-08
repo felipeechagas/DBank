@@ -1,5 +1,6 @@
 package com.DigitalBank.DBank.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -37,8 +38,9 @@ public class Conta extends Instituicao {
   private Double saldo;
   private String tipoConta;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne
   @JoinColumn(name = "cliente_id")
+  @JsonBackReference
   private Cliente cliente;
 
   @Temporal(TemporalType.TIMESTAMP)

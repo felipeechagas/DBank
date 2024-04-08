@@ -1,6 +1,7 @@
 package com.DigitalBank.DBank.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,13 +36,14 @@ public class Cliente {
   private String genero;
   private String contato;
 
-  @JsonIgnore
-  @OneToOne(mappedBy = "cliente")
-  private Conta conta;
 
-  @JsonIgnore
   @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+  @JsonManagedReference
   private CartaoCredito cartaoCredito;
+
+  @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+  @JsonManagedReference
+  private Conta conta;
 
 
 }
