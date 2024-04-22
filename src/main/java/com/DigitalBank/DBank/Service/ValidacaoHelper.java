@@ -1,6 +1,7 @@
 package com.DigitalBank.DBank.Service;
 
 import com.DigitalBank.DBank.model.Conta;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @since 28/02/2023
  * @version 1.0
  */
+@Service
 public class ValidacaoHelper {
 
   public static boolean isPossivelCadastrarConta(Conta conta) {
@@ -28,25 +30,25 @@ public class ValidacaoHelper {
       return false;
     }
 
-    if(conta.getPessoa().getNome().isEmpty()) {
+    if(conta.getCliente().getNome().isEmpty()) {
       System.out.println("Nome não foi preenchido.");
 
       return false;
     }
 
-    if(conta.getPessoa().getCpf().isEmpty()) {
+    if(conta.getCliente().getCpf().isEmpty()) {
       System.out.println("CPF não foi preenchido.");
 
       return false;
     }
 
-    if(conta.getPessoa().getGenero().isEmpty()) {
+    if(conta.getCliente().getGenero().isEmpty()) {
       System.out.println("Gênero não foi preenchido.");
 
       return false;
     }
 
-    if(conta.getPessoa().getDataNascimento() == null) {
+    if(conta.getCliente().getDataNascimento() == null) {
       System.out.println("Data de Nascimento não foi preenchido.");
 
       return false;
@@ -94,7 +96,7 @@ public class ValidacaoHelper {
   public static boolean isContaExistente(List<Conta> contas, String cpf) {
     if(!contas.isEmpty()) {
       for (Conta conta : contas) {
-        if(conta.getPessoa().getCpf().equals(cpf)) {
+        if(conta.getCliente().getCpf().equals(cpf)) {
           return true;
         }
       }
