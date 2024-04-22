@@ -30,7 +30,7 @@ public class ContaController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Conta> criarConta(@RequestBody Conta conta) {
+    public ResponseEntity<Conta> criarConta(@RequestBody Conta conta) throws Exception {
         try {
             Conta novaConta = contaService.criarConta(conta);
             return new ResponseEntity<>(novaConta, HttpStatus.CREATED);
