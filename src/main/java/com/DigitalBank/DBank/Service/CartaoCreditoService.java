@@ -40,18 +40,24 @@ public class CartaoCreditoService {
 
                     // Gera um número de cartão automaticamente
                     Random random = new Random();
-                    String numeroCartao = String.format("%04d-%04d-%04d-%04d",
-                            random.nextInt(10000), random.nextInt(10000),
-                            random.nextInt(10000), random.nextInt(10000));
-                    cartaoCredito.setNumeroCartao(numeroCartao);
+                    StringBuilder numeroCartaoBuilder = new StringBuilder();
+                    for (int i = 0; i < 16; i++) {
+                        int digit = random.nextInt(10);
+                        numeroCartaoBuilder.append(digit);
+                        if ((i + 1) % 4 == 0 && i != 15) {
+                            numeroCartaoBuilder.append("-");
+                        }
+                    }
+                    cartaoCredito.setNumeroCartao(numeroCartaoBuilder.toString());
 
                     // Gera um código de segurança (CVV) de três dígitos aleatório
-                    String codigoSeguranca = String.format("%03d", random.nextInt(1000));
-                    cartaoCredito.setCodigoSeguranca(Integer.valueOf(codigoSeguranca));
+                    int codigoSeguranca = random.nextInt(1000);
+                    cartaoCredito.setCodigoSeguranca(codigoSeguranca);
 
-                    // Define a data de validade do cartão (3 anos a partir da data atual)
+                    // Define a data de validade do cartão (5 anos a partir da data de criação do cartão)
                     Calendar calendarValidade = Calendar.getInstance();
-                    calendarValidade.add(Calendar.YEAR, 3);
+                    calendarValidade.setTime(new Date());
+                    calendarValidade.add(Calendar.YEAR, 5);
                     Date validadeCartao = calendarValidade.getTime();
                     cartaoCredito.setValidade(new SimpleDateFormat("MM/yyyy").format(validadeCartao));
 
@@ -64,7 +70,38 @@ public class CartaoCreditoService {
                     throw new BadRequestException("Cliente já possui um cartão de crédito.");
                 }
             } else {
-                throw new BadRequestException("Cliente não encontrado. Não é possível criar o cartão de crédito.");
+                // Cria o cliente se não existir
+                Cliente novoCliente = clienteRepository.save(clienteAssociado);
+                cartaoCredito.setCliente(novoCliente);
+
+                // Gera um número de cartão automaticamente
+                Random random = new Random();
+                StringBuilder numeroCartaoBuilder = new StringBuilder();
+                for (int i = 0; i < 16; i++) {
+                    int digit = random.nextInt(10);
+                    numeroCartaoBuilder.append(digit);
+                    if ((i + 1) % 4 == 0 && i != 15) {
+                        numeroCartaoBuilder.append("-");
+                    }
+                }
+                cartaoCredito.setNumeroCartao(numeroCartaoBuilder.toString());
+
+                // Gera um código de segurança (CVV) de três dígitos aleatório
+                int codigoSeguranca = random.nextInt(1000);
+                cartaoCredito.setCodigoSeguranca(codigoSeguranca);
+
+                // Define a data de validade do cartão (5 anos a partir da data de criação do cartão)
+                Calendar calendarValidade = Calendar.getInstance();
+                calendarValidade.setTime(new Date());
+                calendarValidade.add(Calendar.YEAR, 5);
+                Date validadeCartao = calendarValidade.getTime();
+                cartaoCredito.setValidade(new SimpleDateFormat("MM/yyyy").format(validadeCartao));
+
+                // Define o status do cartão como ativo
+                cartaoCredito.setStatus(CartaoCredito.Status.ATIVO);
+
+                // Salva o cartão de crédito no banco de dados
+                return cartaoCreditoRepository.save(cartaoCredito);
             }
         } else {
             throw new BadRequestException("CPF do cliente não fornecido. Não é possível criar o cartão de crédito.");
