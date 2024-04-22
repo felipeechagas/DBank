@@ -1,26 +1,39 @@
 package com.DigitalBank.DBank.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.util.Date;
 
-/** Esta model representa uma Instituição Bancária.
- *
+/**
+ * Esta model representa uma Instituição Bancária.
+ * <p>
  * Uma instituição possui CNPJ único. <p><br />
  * Uma instituição é regulamentada pelo Governo Federal. <p><br />
  *
  * @author FelipeChagas
- * @since 28/02/2023
  * @version 1.0
  * @see <a href="https://pt.wikipedia.org/wiki/Brasil">Site do Brasil</>
+ * @since 28/02/2023
  */
 
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@Table(name = "tb_instituicao")
 public class Instituicao {
 
+  private static final long serialVersionUID = 1L;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
   private String nome;
-
   private String cnpj;
-
   private Date dataCriacao;
-
   private String codigo;
 
   public Instituicao() {
@@ -30,35 +43,4 @@ public class Instituicao {
     this.codigo = "0001";
   }
 
-  public String getNome() {
-    return nome;
-  }
-
-  public void setNome(String nome) {
-    this.nome = nome;
-  }
-
-  public String getCnpj() {
-    return cnpj;
-  }
-
-  public void setCnpj(String cnpj) {
-    this.cnpj = cnpj;
-  }
-
-  public Date getDataCriacao() {
-    return dataCriacao;
-  }
-
-  public void setDataCriacao(Date dataCriacao) {
-    this.dataCriacao = dataCriacao;
-  }
-
-  public String getCodigo() {
-    return codigo;
-  }
-
-  public void setCodigo(String codigo) {
-    this.codigo = codigo;
-  }
 }
