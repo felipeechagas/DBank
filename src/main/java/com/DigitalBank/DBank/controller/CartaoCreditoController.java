@@ -1,16 +1,13 @@
-package com.DigitalBank.DBank.Controller;
+package com.DigitalBank.DBank.controller;
 
-import com.DigitalBank.DBank.Service.CartaoCreditoService;
-import com.DigitalBank.DBank.Service.ClienteService;
+import com.DigitalBank.DBank.service.CartaoCreditoService;
 import com.DigitalBank.DBank.exception.BadRequestException;
 import com.DigitalBank.DBank.model.CartaoCredito;
-import com.DigitalBank.DBank.model.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.List;
 
 @RestController
