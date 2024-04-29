@@ -62,4 +62,25 @@ public class Conta extends Instituicao {
     this.ativa = ativa;
   }
 
+  // Método para realizar um depósito na conta
+  public void depositar(double valor) {
+    if (valor <= 0) {
+      throw new IllegalArgumentException("O valor do depósito deve ser maior que zero.");
+    }
+    this.saldo += valor;
+  }
+
+  public void debitar(double valor) {
+    if (this.saldo >= valor) {
+      this.saldo -= valor;
+    } else {
+      throw new IllegalArgumentException("Saldo insuficiente na conta.");
+    }
+
+  }
+
+  public void creditar(double valor) {
+    this.saldo += valor;
+  }
+
 }
