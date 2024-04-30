@@ -1,4 +1,4 @@
-package com.DigitalBank.DBank.Service;
+package com.DigitalBank.DBank.service;
 
 import com.DigitalBank.DBank.model.Conta;
 import org.springframework.stereotype.Service;
