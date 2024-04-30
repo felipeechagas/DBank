@@ -1,14 +1,16 @@
-package com.DigitalBank.DBank.Service;
+package com.DigitalBank.DBank.service;
 
-import com.DigitalBank.DBank.Repository.ClienteRepository;
-import com.DigitalBank.DBank.Repository.ContaRepository;
+import com.DigitalBank.DBank.repository.ClienteRepository;
+import com.DigitalBank.DBank.repository.ContaRepository;
+import com.DigitalBank.DBank.repository.TransacaoDetalhadaRepository;
+import com.DigitalBank.DBank.repository.TransacaoRepository;
 import com.DigitalBank.DBank.exception.BadRequestException;
-import com.DigitalBank.DBank.model.CartaoCredito;
-import com.DigitalBank.DBank.model.Cliente;
-import com.DigitalBank.DBank.model.Conta;
+import com.DigitalBank.DBank.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,12 @@ public class ContaService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private TransacaoRepository transacaoRepository;
+
+    @Autowired
+    private TransacaoDetalhadaRepository transacaoDetalhadaRepository;
 
     public List<Conta> listarContas() {
         return contaRepository.findAll();
@@ -77,10 +85,6 @@ public class ContaService {
         }
     }
 
-
-
-
-
     public Conta atualizarConta(Long id, Conta contaAtualizada) {
         Conta contaExistente = contaRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Conta não encontrado com o ID: " + id));
@@ -109,5 +113,89 @@ public class ContaService {
         // Excluir a conta
         contaRepository.deleteById(id);
     }
+
+    public Double consultarSaldo(String numeroConta) {
+        Conta conta = contaRepository.findByNumero(numeroConta);
+
+        if (conta != null) {
+            return conta.getSaldo();
+        } else {
+            throw new BadRequestException("Conta não encontrada.");
+        }
+    }
+
+    @Transactional
+    public void deposito(String numeroConta, double valor) {
+        // Busca a conta pelo número
+        Conta conta = contaRepository.findByNumero(numeroConta);
+
+        // Verifica se a conta foi encontrada
+        if (conta == null) {
+            throw new BadRequestException("Conta não encontrada para o número: " + numeroConta);
+        }
+
+        // Realiza o depósito
+        conta.depositar(valor);
+
+        // Salva as alterações no banco de dados
+        contaRepository.save(conta);
+    }
+
+    public void saque(String numeroConta, double valor) {
+        Conta conta = contaRepository.findByNumero(numeroConta);
+
+        if (conta == null) {
+            throw new BadRequestException("Conta não encontrada para o número: " + numeroConta);
+        }
+
+        double saldoAtual = conta.getSaldo();
+
+        if (saldoAtual < valor) {
+            throw new BadRequestException("Saldo insuficiente para efetuar o saque na conta: " + numeroConta);
+        }
+
+        double novoSaldo = saldoAtual - valor;
+        conta.setSaldo(novoSaldo);
+
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setTipoTransacao("SAQUE");
+        transacao.setDataHora(LocalDateTime.now());
+        transacao.setValor(valor);
+
+        transacaoRepository.save(transacao);
+    }
+
+    public void transferencia(String numeroContaOrigem, String numeroContaDestino, double valor) {
+        // Obter contas de origem e destino do banco de dados
+        Conta contaOrigem = contaRepository.findByNumero(numeroContaOrigem);
+        Conta contaDestino = contaRepository.findByNumero(numeroContaDestino);
+
+        // Verificar se as contas existem
+        if (contaOrigem == null || contaDestino == null) {
+            throw new BadRequestException("Conta de origem ou destino não encontrada.");
+        }
+
+        // Verificar se a conta de origem tem saldo suficiente
+        if (contaOrigem.getSaldo() < valor) {
+            throw new BadRequestException("Saldo insuficiente na conta de origem.");
+        }
+
+        // Atualizar os saldos das contas
+        contaOrigem.debitar(valor);
+        contaDestino.creditar(valor);
+
+        // Registrar a transação
+        Transacao transacao = new Transacao();
+        transacao.setContaOrigem(contaOrigem);
+        transacao.setContaDestino(contaDestino);
+        transacao.setValor(valor);
+        transacao.setDataHora(LocalDateTime.now());
+        transacaoRepository.save(transacao);
+    }
+
+
+
+
 
 }

@@ -1,7 +1,7 @@
-package com.DigitalBank.DBank.Service;
+package com.DigitalBank.DBank.service;
 
-import com.DigitalBank.DBank.Repository.CartaoCreditoRepository;
-import com.DigitalBank.DBank.Repository.ClienteRepository;
+import com.DigitalBank.DBank.repository.CartaoCreditoRepository;
+import com.DigitalBank.DBank.repository.ClienteRepository;
 import com.DigitalBank.DBank.exception.BadRequestException;
 import com.DigitalBank.DBank.model.CartaoCredito;
 import com.DigitalBank.DBank.model.Cliente;
