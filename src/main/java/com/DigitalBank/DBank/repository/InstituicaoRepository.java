@@ -1,4 +1,4 @@
-package com.DigitalBank.DBank.Repository;
+package com.DigitalBank.DBank.repository;
 
 import com.DigitalBank.DBank.model.Instituicao;
 import org.springframework.data.jpa.repository.JpaRepository;
