@@ -1,4 +1,4 @@
-package com.DigitalBank.DBank.Interfaces;
+package com.DigitalBank.DBank.interfaces;
 
 import com.DigitalBank.DBank.model.Conta;
 
@@ -21,9 +21,9 @@ public interface Operacoes {
    * @since 28/02/2023
    * @version 1.0
    */
-  public void sacar(Conta conta, double valor);
+  public void sacar(double valor, String numeroConta);
 
-  /** Esta função é responsável por inserir dinheiro em uma conta.
+  /** Esta função é responsável por inserir dinheiro na conta.
    *
    * @author FelipeChagas
    * @since 28/02/2023
