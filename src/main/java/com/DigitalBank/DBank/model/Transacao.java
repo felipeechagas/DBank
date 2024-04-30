@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,14 @@ public class Transacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "conta_id")
+    private Conta conta;
 
     @Column(name = "tipo_transacao")
     private String tipoTransacao;
+
+    private Date data;
 
     private double valor;
 
@@ -34,4 +40,10 @@ public class Transacao {
 
     @Column(name = "data_hora")
     private Date dataHora;
+
+    public void setDataHora(Date now) {
+    }
+
+    public void setDataHora(LocalDateTime now) {
+    }
 }
